@@ -1,9 +1,14 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import parse_args
 import getfasta
 =======
 from parse_args import parse_args
 >>>>>>> sort_fun
+=======
+from parse_args import parse_args
+import getfasta
+>>>>>>> 33a5de7f76df1dbb565a2f7829db3fc2db8cf9f0
 import sort
 
 if __name__ == "__main__":
