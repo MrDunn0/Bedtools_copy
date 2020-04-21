@@ -10,13 +10,13 @@ if __name__ == "__main__":
         elif args.sizeD:
             sort.write_for_size(sort.sizeD(args.i))
         elif args.chrThenSizeA:
-            args.write_for_chr_sorted(args.chrThenSizeA(args.i))
+            sort.write_for_chr_sorted(sort.chrThenSizeA(args.i))
         elif args.chrThenSizeD:
-            args.write_for_chr_sorted(args.chrThenSizeD(args.i))
+            sort.write_for_chr_sorted(sort.chrThenSizeD(args.i))
         elif args.chrThenScoreA:
-            args.write_for_chr_sorted(args.chrThenScoreA(args.i))
+            sort.write_for_chr_sorted(sort.chrThenScoreA(args.i))
         elif args.chrThenScoreD:
-            args.write_for_chr_sorted(args.chrThenSizeD(args.i))
+            sort.write_for_chr_sorted(sort.chrThenSizeD(args.i))
         else:
             sort.write_for_chr_sorted(sort.sort_by_default(args.i))
 
