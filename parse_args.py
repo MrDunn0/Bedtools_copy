@@ -97,7 +97,7 @@ def parse_args():
     getfasta = subprasers.add_parser("getfasta",
                                      help='bedtools getfasta extracts sequences from a FASTA file\
                                      for each of the intervals defined in a BED file.')
-    getfasta.add_argument('--fi', action='store_true',
+    getfasta.add_argument('--fi',
                           help='Specify an output file name.')
     getfasta.add_argument('--fo', action='store_true',
                           help='Specify an output file name. \
