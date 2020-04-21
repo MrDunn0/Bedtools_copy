@@ -1,4 +1,5 @@
 import parse_args
+import getfasta
 import sort
 
 if __name__ == "__main__":
