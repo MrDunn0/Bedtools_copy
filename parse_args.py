@@ -26,12 +26,12 @@ def parse_args():
                       help='Sort by chromosome (asc), then by score (asc).')
     sort.add_argument('--chrThenScoreD', action="store_true",
                       help='Sort by chromosome (asc), then by score (desc).')
-    sort.add_argument('-g', action="store_true",
-                      help='Define sort order by order of tab-delimited file \
-                        with chromosome names in the first column.')
-    sort.add_argument('--faidx', action="store_true",
-                      help='Define sort order by order of tab-delimited file \
-                        with chromosome names in the first column. Sort by specified chromosome order.')
+    # sort.add_argument('-g', action="store_true",
+    #                   help='Define sort order by order of tab-delimited file \
+    #                     with chromosome names in the first column.')
+    # sort.add_argument('--faidx', action="store_true",
+    #                   help='Define sort order by order of tab-delimited file \
+    #                     with chromosome names in the first column. Sort by specified chromosome order.')
 
     # optoins for subtract
     subtract = subprasers.add_parser('subtract',
@@ -90,7 +90,7 @@ def parse_args():
     intersect = subprasers.add_parser("intersect",
                                       help='bedtools intersect allows one to screen \
                                       for overlaps between two sets of genomic features. ')
-    intersect.add_argument('', action='store_true',
+    intersect.add_argument('--some_arg', action='store_true',
                            help='')
 
     # options for getfasta
@@ -102,6 +102,7 @@ def parse_args():
     getfasta.add_argument('--fo', action='store_true',
                           help='Specify an output file name. \
                           By default, output goes to stdout.')
+
     getfasta.add_argument('--name', action='store_true',
                           help='Use the “name” column in the BED file \
                           for the FASTA headers in the output FASTA file.')
