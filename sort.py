@@ -161,12 +161,10 @@ def chrThenScoreD(file):
 
 def write_for_chr_sorted(tuple_header_and_chr_dict_with_sorted_start):
     header, chr_dict_with_sorted_start = tuple_header_and_chr_dict_with_sorted_start
-    with open("sorted_file.txt", "w") as f:
-        f.write("".join(header))
-        for chr in sorted(chr_dict_with_sorted_start.keys()):
-            for line in chr_dict_with_sorted_start[chr]:
-                f.write("\t".join(line))
-                f.write("\n")
+    print("".join(header))
+    for chr in sorted(chr_dict_with_sorted_start.keys()):
+        for line in chr_dict_with_sorted_start[chr]:
+            print("\t".join(line))
 
 
 def write_for_size(tuple_header_sorted_list):
