@@ -1,6 +1,3 @@
-import parse_args
-
-
 def get_header_and_start_line(file):
     header = []
     i = 0
@@ -179,6 +176,7 @@ def write_for_size(tuple_header_sorted_list):
         for line in sorted_list:
             f.write("\t".join(line))
             f.write("\n")
+
 
 
 # write_for_chr_sorted(sort_by_default("unsorted.bed"))
