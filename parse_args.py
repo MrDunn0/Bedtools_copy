@@ -117,6 +117,4 @@ def parse_args():
                           help='Given BED12 input, extract and concatenate the sequences \
                           from the BED “blocks” (e.g., exons)')
 
-
-    # дальше мне стало немного лень писать, напарсите сами?)
     return parser.parse_args()
