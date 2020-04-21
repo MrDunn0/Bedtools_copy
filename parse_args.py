@@ -102,19 +102,9 @@ def parse_args():
     getfasta.add_argument('--fo', action='store_true',
                           help='Specify an output file name. \
                           By default, output goes to stdout.')
-<<<<<<< HEAD
-<<<<<<< HEAD
     getfasta.add_argument('--name', action='store_true',
                           help='Use the “name” column in the BED file \
                           for the FASTA headers in the output FASTA file.')
-=======
->>>>>>> sort_fun
-=======
-
-    getfasta.add_argument('--name', action='store_true',
-                          help='Use the “name” column in the BED file \
-                          for the FASTA headers in the output FASTA file.')
->>>>>>> 33a5de7f76df1dbb565a2f7829db3fc2db8cf9f0
     getfasta.add_argument('--tab', action='store_true',
                           help='Report extract sequences in a tab-delimited format \
                           instead of in FASTA format.')
