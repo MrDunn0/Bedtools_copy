@@ -171,11 +171,9 @@ def write_for_chr_sorted(tuple_header_and_chr_dict_with_sorted_start):
 
 def write_for_size(tuple_header_sorted_list):
     header, sorted_list = tuple_header_sorted_list
-    with open("sorted_file.txt", "w") as f:
-        f.write("".join(header))
-        for line in sorted_list:
-            f.write("\t".join(line))
-            f.write("\n")
+    print("".join(header))
+    for line in sorted_list:
+        print("\t".join(line))
 
 
 
