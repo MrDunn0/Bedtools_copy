@@ -7,7 +7,7 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--i', help='bed file')
+    parser.add_argument('-i', help='bed file')
     subprasers = parser.add_subparsers(dest='command')
 
     # options for sort
