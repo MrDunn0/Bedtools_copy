@@ -1,5 +1,5 @@
 from parse_args import parse_args
-# import getfasta
+import getfasta
 import sort
 
 if __name__ == "__main__":
@@ -30,5 +30,9 @@ if __name__ == "__main__":
         pass
 
     elif args.command == 'getfasta':
+        input_bed = args.i
+        input_fasta = getfasta.parse_sequences(args.fi)
+        print(input_fasta)
+        getfasta.do_bed(input_bed, input_fasta)
         pass
 

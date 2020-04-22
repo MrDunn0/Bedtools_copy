@@ -1,5 +1,7 @@
 class SeqObject():
-
+    """
+    Создаем класс, шоб было как в биопитоне
+    """
     def __init__(self, seq_id=None, description=None, name=None, sequence=None):
         self.seq_id = seq_id
         self.description = description
@@ -45,3 +47,27 @@ def parse_sequences(filename):
         for element in fasta_tuples:
             list_of_objects.append(fasta_tuple_to_object(element))
         return list_of_objects
+
+
+def do_bed(file, list_of_objects):
+    with open(file, 'r') as in_f:
+        for line in in_f:
+            line = line.strip()
+            if line.startswith("track") or line.startswith("#"):
+                pass
+            else:
+                chrom = line.split('\t')[0]
+                start = int(line.split('\t')[1])
+                end = int(line.split('\t')[2])
+
+                for obj in list_of_objects:
+                    if obj.seq_id == chrom:
+                        print(start, end)
+                        # print(obj.sequence[])
+                        print('yes')
+                        # тут уже можно вытаскивать интервалы, но последовательность надо проиндексировать...
+                    else:
+                        print('no')
+
+
+                print(chrom, start, end)
