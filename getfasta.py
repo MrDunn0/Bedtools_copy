@@ -2,6 +2,7 @@ class SeqObject():
     """
     Создаем класс, шоб было как в биопитоне
     """
+
     def __init__(self, seq_id=None, description=None, name=None, sequence=None):
         self.seq_id = seq_id
         self.description = description
@@ -49,7 +50,7 @@ def parse_sequences(filename):
         return list_of_objects
 
 
-def do_bed(file, list_of_objects):
+def get_sequences(file, list_of_objects):
     with open(file, 'r') as in_f:
         for line in in_f:
             line = line.strip()
@@ -62,12 +63,9 @@ def do_bed(file, list_of_objects):
 
                 for obj in list_of_objects:
                     if obj.seq_id == chrom:
-                        print(start, end)
-                        # print(obj.sequence[])
-                        print('yes')
-                        # тут уже можно вытаскивать интервалы, но последовательность надо проиндексировать...
-                    else:
-                        print('no')
-
-
-                print(chrom, start, end)
+                        name = f">{chrom}:{start}-{end}"
+                        # наш скрипт включает все границы
+                        # первая позиция = первый нуклеотид
+                        # десятая позиция = десятый нуклеотид
+                        seq = obj.sequence[start - 1:end]
+                        yield name, seq
