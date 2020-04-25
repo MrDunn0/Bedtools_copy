@@ -1,3 +1,6 @@
+import parse_args
+
+
 class SeqObject():
     """
     Создаем класс, шоб было как в биопитоне
@@ -63,9 +66,44 @@ def get_sequences(file, list_of_objects):
 
                 for obj in list_of_objects:
                     if obj.seq_id == chrom:
-                        name = f">{chrom}:{start}-{end}"
+                        name = f"{chrom}:{start}-{end}"
                         # наш скрипт включает все границы
                         # первая позиция = первый нуклеотид
                         # десятая позиция = десятый нуклеотид
                         seq = obj.sequence[start - 1:end]
                         yield name, seq
+
+
+def give_me_fasta(tuples_to_return, file_out=False, tab_out=False):
+    print(file_out)
+
+    if file_out and not tab_out:
+        with open(f"{file_out}", 'w') as out_file:
+            for name, seq in tuples_to_return:
+                out_file.write(f">{name}\n{seq}\n")
+
+    if not file_out and not tab_out:
+        for name, seq in tuples_to_return:
+            print(f">{name}")
+            print(seq)
+
+    if file_out and tab_out:
+        with open(f"{file_out}", 'w') as out_file:
+            for name, seq in tuples_to_return:
+                out_file.write(f"{name}\t{seq}\n")
+
+    if not file_out and tab_out:
+        for name, seq in tuples_to_return:
+            print(f"{name}\t{seq}")
+
+
+
+
+# def give_me_tab(tuples_to_return, out_f=None):
+#     if out_f is not None:
+#         with open(f"{out_f}", 'w') as out_file:
+#             for name, seq in tuples_to_return:
+#                 out_file.write(f"{name}\t{seq}\n")
+#     if out_f is None:
+#         for name, seq in tuples_to_return:
+#             print(f"{name}\t{seq}")

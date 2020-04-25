@@ -30,9 +30,19 @@ if __name__ == "__main__":
         pass
 
     elif args.command == 'getfasta':
-        input_bed = args.i
-        input_fasta = getfasta.parse_sequences(args.fi)
-        print(input_fasta)
-        getfasta.do_bed(input_bed, input_fasta)
-        pass
 
+        # define input bed
+        if args.i:
+            input_bed = args.i
+        if args.bed:
+            input_bed = args.bed
+        # define input fasta
+        input_fasta = getfasta.parse_sequences(args.fi)
+        # define output
+
+        # our tuples with names and sequences to return
+        names_and_seqs = list(getfasta.get_sequences(input_bed, input_fasta))
+
+        # fasta or tab, stdout or in file
+        getfasta.give_me_fasta(names_and_seqs,
+                               file_out=args.fo, tab_out=args.tab)

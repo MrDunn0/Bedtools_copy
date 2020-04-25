@@ -95,21 +95,21 @@ def parse_args():
 
     # options for getfasta
     getfasta = subprasers.add_parser("getfasta",
-                                     help='bedtools getfasta extracts sequences from a FASTA file\
-                                     for each of the intervals defined in a BED file.')
+                                     help='bedtools getfasta extracts sequences from a FASTA file'
+                                          'for each of the intervals defined in a BED file.')
     getfasta.add_argument('--fi', '-fi',
                           help='Specify an output file name.')
-    getfasta.add_argument('--fo', '-fo',
-                          help='Specify an output file name. \
-                          By default, output goes to stdout.')
+    getfasta.add_argument('--fo', '-fo', default=False,
+                          help='Specify an output file name.'
+                               'By default, output goes to stdout.')
     getfasta.add_argument('--bed', '-bed',
                           help='BED file of ranges to extract from -fi')
+    getfasta.add_argument('--tab', '-tab', action='store_true', default=False,
+                          help='Report extract sequences in a tab-delimited format'
+                               'instead of in FASTA format.')
     # getfasta.add_argument('--name', action='store_true',
     #                       help='Use the “name” column in the BED file \
     #                       for the FASTA headers in the output FASTA file.')
-    # getfasta.add_argument('--tab', action='store_true',
-    #                       help='Report extract sequences in a tab-delimited format \
-    #                       instead of in FASTA format.')
     # getfasta.add_argument('--bedOut', action='store_true',
     #                       help='Report extract sequences in a tab-delimited BED format \
     #                       instead of in FASTA format.')
