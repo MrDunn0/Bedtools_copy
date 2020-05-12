@@ -330,7 +330,7 @@ def get_overlap(a_int, b_int, mode=None, fraction=None):
     a_start, a_end = int(a_int[1]), int(a_int[2])
     b_start, b_end = int(b_int[1]), int(b_int[2])
 
-    overlap = a_int
+    overlap = a_int[:]
     if a_start >= b_start:
         overlap[1] = a_start
         if a_end <= b_end:
@@ -370,6 +370,7 @@ def overlaps_collector(file_a, file_b, mode, **kwargs):
         b_parser = bed_reader(file_b)
         read_a, read_b = False, True
         a_int = next(a_parser)
+        warnings = 0
         try:
             while True:
                 if read_a:
@@ -394,7 +395,6 @@ def overlaps_collector(file_a, file_b, mode, **kwargs):
                         read_a = True
                     continue
                 if kwargs["s"] or kwargs["S"]:
-                    warnings = 0
                     if len(a_int) >= 6 and len(b_int) >= 6:
                         if kwargs["s"] and a_int[5] != b_int[5]:
                             continue
@@ -402,7 +402,8 @@ def overlaps_collector(file_a, file_b, mode, **kwargs):
                             continue
                     elif warnings == 0:
                         print(
-                            "WARNING! Strandedness can't be taken into account since one of the files does not have 6 columns")
+                            "WARNING! Strandedness can't be taken into account since there are no six columns" \
+                            "in one of the files")
                         warnings += 1
 
                 if overlap_check(a_int, b_int):  # a_int overlaps b_int
@@ -434,12 +435,16 @@ def overlaps_collector(file_a, file_b, mode, **kwargs):
 def write_subtractions(a_int, opened_file, non_overlapping=None, fraction=None):
     global b_intervals
     cut_i = 0
+    overlaps = None
     for i, b_int in enumerate(b_intervals):
         if not overlap_check(a_int, b_int):
             if int(a_int[2]) <= int(b_int[1]):
                 cut_i = i + 1
         else:
-            if not non_overlapping:
+            overlaps = True
+            if non_overlapping:
+                break
+            else:
                 if fraction and not get_overlap(a_int, b_int, mode="subtract", fraction=fraction):
                     opened_file.write("\t".join(a_int) + "\n")
                 else:
@@ -448,7 +453,8 @@ def write_subtractions(a_int, opened_file, non_overlapping=None, fraction=None):
                         opened_file.write(interval + "\n")
                 b_intervals = b_intervals[cut_i:]
                 return
-    opened_file.write("\t".join(a_int) + "\n")
+    if not overlaps:
+        opened_file.write("\t".join(a_int) + "\n")
     b_intervals = b_intervals[cut_i:]
 
 
@@ -531,7 +537,7 @@ def main_merge(file, d=0):
 
             except StopIteration:
                 out_f.write("\t".join(previous ) + "\n")
-                return  
+                return
 
 
 # intersect("wes_71.final_sorted.bed", "bad_exons.bed")
