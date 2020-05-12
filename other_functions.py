@@ -39,6 +39,9 @@ def chr_start_sort(file):
             out_f.write("\t".join(interval) + "\n")
 
 
+# Intersect and Subtract code
+
+
 def overlap_check(a_int, b_int):
     a_start, a_end = int(a_int[1]), int(a_int[2])
     b_start, b_end = int(b_int[1]), int(b_int[2])
@@ -80,6 +83,74 @@ def write_overlaps(a_int, opened_file):
             overlap = get_overlap(a_int, b_int)
             opened_file.write(overlap + "\n")
     b_intervals = b_intervals[cut_i:]
+
+
+def overlaps_collector(file_a, file_b, mode, **kwargs):
+    file_postfix = "intersections" if mode == "intersect" else "subtractions"
+    with open(f"{file_a.split('/')[-1][:-4]}_{file_postfix}.bed", "w") as out_f:
+        a_parser = bed_reader(file_a)
+        b_parser = bed_reader(file_b)
+        read_a, read_b = False, True
+        a_int = next(a_parser)
+        try:
+            while True:
+                if read_a:
+                    a_int = next(a_parser)
+                    read_a = False
+                elif read_b:
+                    b_int = next(b_parser)
+                    read_b = False
+                else:
+                    raise ReadingError(f"{a_int, b_int}")
+
+                a_chr, b_chr = a_int[0].replace("chr", ""), b_int[0].replace("chr", "")
+                if a_chr != b_chr:
+                    if a_chr > b_chr:
+                        b_intervals.clear()
+                        read_b = True
+                    else:
+                        if mode == "subtract":
+                            write_subtractions(a_int, out_f, non_overlapping=kwargs["A"], fraction=kwargs["f"])
+                        elif mode == "intersect":
+                            write_overlaps(a_int, out_f)
+                        read_a = True
+                    continue
+                if kwargs["s"] or kwargs["S"]:
+                    warnings = 0
+                    if len(a_int) >= 6 and len(b_int) >= 6:
+                        if kwargs["s"] and a_int[5] != b_int[5]:
+                            continue
+                        elif kwargs["S"] and a_int[5] != b_int[5]:
+                            continue
+                    elif warnings == 0:
+                        print(
+                            "WARNING! Strandedness can't be taken into account since one of the files does not have 6 columns")
+                        warnings += 1
+
+                if overlap_check(a_int, b_int):  # a_int overlaps b_int
+                    b_intervals.append(b_int)
+                    read_b = True
+                elif int(a_int[1]) >= int(b_int[2]):  # a_start >= b_end
+                    read_b = True
+                else:  # a_start <= b_end
+                    if mode == "subtract":
+                        write_subtractions(a_int, out_f, non_overlapping=kwargs["A"], fraction=kwargs["f"])
+                    elif mode == "intersect":
+                        write_overlaps(a_int, out_f)
+                    read_a = True
+
+        except StopIteration:
+            try:
+                next(b_parser)
+            except StopIteration:
+                if mode == "subtract":
+                    write_subtractions(a_int, out_f, non_overlapping=kwargs["A"], fraction=kwargs["f"])
+                    for a_int in a_parser:
+                        out_f.write("\t".join(a_int[0:3]) + "\n")
+                elif mode == "intersect":
+                    if b_intervals:
+                        write_overlaps(a_int, out_f)
+            return
 
 
 def write_subtractions(a_int, opened_file, non_overlapping=None, fraction=None):
@@ -148,117 +219,6 @@ def get_subtraction(a_int, b_int, mode):
         return ["\t".join([str(i) for i in interval]) for interval in sorted(temp_1, key=lambda x: x[1])]
 
 
-def intersect(file_a, file_b, **kwargs):
-    with open(f"{file_a.split('/')[-1][:-4]}_intersections.bed", "w") as out_f:
-        a_parser = bed_reader(file_a)
-        b_parser = bed_reader(file_b)
-        read_a, read_b = False, True
-        a_int = next(a_parser)
-        try:
-            while True:
-                if read_a:
-                    a_int = next(a_parser)
-                    read_a = False
-                elif read_b:
-                    b_int = next(b_parser)
-                    read_b = False
-                else:
-                    raise ReadingError(f"{a_int, b_int}")
-
-                a_chr, b_chr = a_int[0].replace("chr", ""), b_int[0].replace("chr", "")
-                if a_chr != b_chr:
-                    if a_chr > b_chr:
-                        b_intervals.clear()  # a_int can't intersect with intervals on prev chr
-                        read_b = True
-                    else:
-                        if b_intervals:
-                            write_overlaps(a_int, out_f)
-                        read_a = True
-                    continue
-
-                if kwargs["s"] or kwargs["S"]:
-                    warnings = 0
-                    if len(a_int) >= 6 and len(b_int) >= 6:
-                        if kwargs["s"] and a_int[5] != b_int[5]:
-                            continue
-                        elif kwargs["S"] and a_int[5] != b_int[5]:
-                            continue
-                    elif warnings == 0:
-                        print(
-                            "WARNING! Strandedness can't be taken into account since one of the files does not have 6 columns")
-                        warnings += 1
-
-                if overlap_check(a_int, b_int):  # a_int overlaps b_int
-                    b_intervals.append(b_int)
-                    read_b = True
-                elif int(a_int[1]) >= int(b_int[2]):  # a_start >= b_end
-                    read_b = True
-                else:  # a_start <= b_end
-                    if b_intervals:
-                        write_overlaps(a_int, out_f)
-                    read_a = True
-
-        except StopIteration:
-            return
-
-
-def subtract(file_a, file_b, **kwargs):
-    with open(f"{file_a.split('/')[-1][:-4]}_subtractions.bed", "w") as out_f:
-        a_parser = bed_reader(file_a)
-        b_parser = bed_reader(file_b)
-        read_a, read_b = False, True
-        a_int = next(a_parser)
-        try:
-            while True:
-                if read_a:
-                    a_int = next(a_parser)
-                    read_a = False
-                elif read_b:
-                    b_int = next(b_parser)
-                    read_b = False
-                else:
-                    raise ReadingError(f"{a_int, b_int}")
-
-                a_chr, b_chr = a_int[0].replace("chr", ""), b_int[0].replace("chr", "")
-                if a_chr != b_chr:
-                    if a_chr > b_chr:
-                        b_intervals.clear()
-                        read_b = True
-                    else:
-                        write_subtractions(a_int, out_f, non_overlapping=kwargs["A"], fraction=kwargs["f"])
-                        read_a = True
-                    continue
-                if kwargs["s"] or kwargs["S"]:
-                    warnings = 0
-                    if len(a_int) >= 6 and len(b_int) >= 6:
-                        if kwargs["s"] and a_int[5] != b_int[5]:
-                            continue
-                        elif kwargs["S"] and a_int[5] != b_int[5]:
-                            continue
-                    elif warnings == 0:
-                        print(
-                            "WARNING! Strandedness can't be taken into account since one of the files does not have 6 columns")
-                        warnings += 1
-
-                if overlap_check(a_int, b_int):  # a_int overlaps b_int
-                    b_intervals.append(b_int)
-                    read_b = True
-                elif int(a_int[1]) >= int(b_int[2]):  # a_start >= b_end
-                    read_b = True
-                else:  # a_start <= b_end
-                    write_subtractions(a_int, out_f, non_overlapping=kwargs["A"], fraction=kwargs["f"])
-                    read_a = True
-
-        except StopIteration:
-            try:
-                next(b_parser)
-            except StopIteration:
-                write_subtractions(a_int, out_f, non_overlapping=kwargs["A"], fraction=kwargs["f"])
-            for a_int in a_parser:
-                out_f.write("\t".join(a_int[0:3]) + "\n")
-            return
-
-
 # Merge code
 
 
@@ -295,9 +255,11 @@ def main_merge(file, d=0):
                 out_f.write("\t".join(previous ) + "\n")
                 return
 
+
 # intersect("wes_71.final_sorted.bed", "bad_exons.bed")
 # intersect(argv[1], argv[2])
 # subtract("sorted_intervals.bed", "bad_exons.bed", A=None, f=0.1)
 # print(sorting_check("test.bed"))
 # chr_start_end_sort("tests/unsorted.bed")
 # main_merge("wes_71.final_sorted_intersections.bed", d=100)
+overlaps_collector("sorted_intervals.bed", "bad_exons.bed", mode="subtract", s=None, S=None, A=None, f=None)
